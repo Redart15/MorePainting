@@ -1,9 +1,13 @@
 package redart15.morepainting.client;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public record Index(int index, Size size){
-	public static Index getDefaultIndex() {
+	@Contract(" -> new")
+	public static @NotNull Index getDefaultIndex() {
 		return new Index(0, Size.getSmallest());
 	}
 

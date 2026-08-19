@@ -10,6 +10,8 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.enums.ArtType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,12 +68,13 @@ public class ArtTypes {
 	}
 
 	public record Art(String key, String title, String artist, String texture) {
-		public IconCoordinate getTexture() {
+		public @NotNull IconCoordinate getTexture() {
 			return TextureRegistry.getTexture(this.texture);
 		}
 	}
 
-	public static Index getNext(Index artIndex) {
+	@Contract("_ -> new")
+	public static @NotNull Index getNext(@NotNull Index artIndex) {
 		int index = artIndex.index();
 		Size size = artIndex.size();
 		List<Art> artList = SIZE2ART_LIST.get(size);
@@ -95,7 +98,7 @@ public class ArtTypes {
 		return new Index(0, next.getKey());
 	}
 
-	public static Index getPrev(Index artIndex) {
+	public static @NotNull Index getPrev(@NotNull Index artIndex) {
 		int index = artIndex.index();
 		if (index > 0) {
 			return new Index(index - 1, artIndex.size());
@@ -111,12 +114,12 @@ public class ArtTypes {
 			}
 		}
 		if (prev == null) {
-			return null;
+			return Index.getDefaultIndex();
 		}
 		return new Index(prev.getValue().size() - 1, prev.getKey());
 	}
 
-	public static Art getArt(Index artIndex) {
+	public static Art getArt(@NotNull Index artIndex) {
 		Size size = artIndex.size();
 		int index = artIndex.index();
 		List<Art> artList = SIZE2ART_LIST.get(size);

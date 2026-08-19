@@ -10,6 +10,7 @@ import net.minecraft.client.render.renderer.State;
 import net.minecraft.client.render.tessellator.TessellatorGeneral;
 import net.minecraft.client.render.texture.stitcher.IconCoordinate;
 import net.minecraft.core.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Mouse;
 import redart15.morepainting.core.interfaces.PaintingIndex;
 
@@ -143,7 +144,7 @@ public class ScreenBetterPaintPicker extends Screen{
 		this.drawTexturedIconPainting(x, y, width * scale, height * scale, texture, alpha);
 	}
 
-	public void drawTexturedIconPainting(int x, int y, int width, int height, IconCoordinate coordinate, float alpha) {
+	public void drawTexturedIconPainting(int x, int y, int width, int height, @NotNull IconCoordinate coordinate, float alpha) {
 		coordinate.parentAtlas.bind();
 		TessellatorGeneral tessellator = GLRenderer.getTessellator();
 		GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, alpha);

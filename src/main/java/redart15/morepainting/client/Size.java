@@ -1,6 +1,7 @@
 package redart15.morepainting.client;
 
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -13,7 +14,8 @@ public class Size extends IntIntMutablePair implements Comparable<Size>{
 		super(left, right);
 	}
 
-	public static Size getSmallest() {
+	@Contract(" -> new")
+	public static @NotNull Size getSmallest() {
 		return new Size(SX, SY);
 	}
 
