@@ -37,7 +37,9 @@ dependencies {
 	// Required at compilation & runtime
 	// included in builds as a runtime dependency
 	implementation(libs.loader)
-	implementation(libs.halplibe) // If you do not need halplibe you can delete this line
+	implementation(libs.halplibe)
+	implementation("com.moandjiezana.toml:toml4j:0.7.2")
+	include("com.moandjiezana.toml:toml4j:0.7.2")
 
 	// Only required at compilation
 	// provides documentation, can be removed if that isn't needed

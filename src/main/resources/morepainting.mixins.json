@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "package": "redart15.morepainting.core.mixin",
+  "compatibilityLevel": "JAVA_${java}",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "accessor.EntityPaintingAccessor",
+    "net.PacketAddPaintingMixin",
+    "net.PlayerMixin",
+    "world.EntityPaintingMixin",
+    "world.ItemPaintingMixin"
+  ],
+  "client": [
+    "net.PacketHandlerClientMixin",
+    "net.PlayerLocalMixinAdditionalGui",
+    "renderer.EntityPaintingRendererMixin",
+    "renderer.TexturePackListMixin"
+  ],
+  "server": [
+    "net.PlayerServerMixinAdditionalGui"
+  ]
+}
