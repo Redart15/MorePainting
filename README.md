@@ -35,9 +35,9 @@ Each element of the list is an object with the following attributes:
 Here is an example:
 ```toml
 paintings = [
-  {                      title = "Alpha",       artist = "Yapetto",   texture = "minecraft:art/alpha",       width = 1, height =  1 },
-  { key = "an_intruder",                        artist = "Yapetto",   texture = "minecraft:art/an_intruder"  width = 2, height = 12 },
-  { key = "ancestor",    title = "Ancestor",                          texture = "minecraft:art/ancestor"                            },
+  { title = "Alpha", artist = "Yapetto", texture = "minecraft:art/alpha", width = 1, height =  1 },
+  { key = "an_intruder", artist = "Yapetto",   texture = "minecraft:art/an_intruder"  width = 2, height = 12 },
+  { key = "ancestor", title = "Ancestor", texture = "minecraft:art/ancestor"},
 ]
 ```
 
