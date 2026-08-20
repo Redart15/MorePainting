@@ -1,5 +1,5 @@
 # MorePainting
-[![GitHub License](https://img.shields.io/github/license/Redart15/MorePainting?labelColor=2B6956&color=54D6AC&cacheSeconds=120)](https://github.com/Redart15/MorePainting?tab=LGPL-3.0-1-ov-file)
+[![GitHub License](https://img.shields.io/github/license/Redart15/MorePainting?labelColor=2B6956&color=54D6AC&cacheSeconds=120)](https://github.com/Redart15/MorePainting?tab=[LGPL-3.0-1-ov-file](https://github.com/Redart15/MorePainting/tree/8.0?tab=CC0-1.0-1-ov-file))
 [![GitHub Release](https://img.shields.io/github/v/release/redart15/MorePainting?labelColor=2B6956&color=54D6AC&cacheSeconds=120)](https://github.com/Redart15/MorePainting/releases)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Redart15/MorePainting?labelColor=2B6956&color=54D6AC&cacheSeconds=120)](https://github.com/Redart15/MorePainting/commits/8.0/)
 [![Lines of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FRedart15%2FMorePainting%2Fbadge&labelColor=2B6956&color=54D6AC)](https://ghloc.vercel.app/)
