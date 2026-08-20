@@ -81,5 +81,5 @@ Check BTA related channel for this mod, ask in bta-modding channel or open a new
   - properly scale the painting
 - Fix the 16x16 painting size to allow much larger painting
 
-:gear: Github:         <https://github.com/Redart15/WearAndTear>  
-:jigsaw: Modrinth:  https://modrinth.com/mod/wearandtear/version/1.0.0+8.0.1  
+:gear: Github:         <https://github.com/Redart15/MorePainting>  
+:jigsaw: Modrinth:  https://modrinth.com/mod/morepainting/version/1.0.0+8.0.1  
