@@ -9,6 +9,7 @@
     "accessor.EntityPaintingAccessor",
     "net.PacketAddPaintingMixin",
     "net.PlayerMixin",
+    "renderer.MinecraftMixin",
     "world.EntityPaintingMixin",
     "world.ItemPaintingMixin"
   ],
