@@ -31,7 +31,7 @@ public class ArtTypes {
 	private static final int MAX_HEIGHT = 15;
 	private static final int PIXEL_PER_BLOCK = 16;
 
-	private record DataArtTypeList(List<DataArt> list) {
+	private record DataArtTypeList(List<DataArt> paintings) {
 	}
 
 	private record DataArt(String key, String title, String artist, String texture, Integer width, Integer height) {
@@ -84,7 +84,7 @@ public class ArtTypes {
 
 	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) {
 		DataArtTypeList extraList = new Toml().read(stream).to(DataArtTypeList.class);
-		for (DataArt artType : extraList.list()) {
+		for (DataArt artType : extraList.paintings()) {
 			// we need to let the TextureManager know about this texture
 			IconCoordinate texture = TextureRegistry.getTexture(artType.texture());
 			// once all IconCoordinates are initialized we will sort them manually back in
