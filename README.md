@@ -1,12 +1,12 @@
 # MorePainting
-[![GitHub License](https://img.shields.io/github/license/Redart15/MorePainting?labelColor=7A5CC1&color=5C71C1&cacheSeconds=120)](https://github.com/Redart15/MorePainting?tab=CC0-1.0-1-ov-file)
-[![GitHub Release](https://img.shields.io/github/v/release/redart15/MorePainting?labelColor=7A5CC1&color=5C71C1&cacheSeconds=120)](https://github.com/Redart15/MorePainting/releases)
-[![GitHub last commit](https://img.shields.io/github/last-commit/Redart15/MorePainting?labelColor=7A5CC1&color=5C71C1&cacheSeconds=120)](https://github.com/Redart15/MorePainting/commits/8.0/)
-[![Lines of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FRedart15%2FMorePainting%2Fbadge&labelColor=7A5CC1&color=5C71C1)](https://ghloc.vercel.app/)
+[![GitHub License](https://img.shields.io/github/license/Redart15/MorePainting?labelColor=7A5CC1&color=FFFFFF&cacheSeconds=120)](https://github.com/Redart15/MorePainting?tab=CC0-1.0-1-ov-file)
+[![GitHub Release](https://img.shields.io/github/v/release/redart15/MorePainting?labelColor=7A5CC1&color=FFFFFF&cacheSeconds=120)](https://github.com/Redart15/MorePainting/releases)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Redart15/MorePainting?labelColor=7A5CC1&color=FFFFFF&cacheSeconds=120)](https://github.com/Redart15/MorePainting/commits/8.0/)
+[![Lines of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Fghloc.vercel.app%2Fapi%2FRedart15%2FMorePainting%2Fbadge&labelColor=7A5CC1&color=FFFFFF)](https://ghloc.vercel.app/)
 
 > Paintings are my favorite thing. I would convert so many from mods if I had the time/knowledge.
-> Ghoul
-No need MorePainting is here to make this process as simple as possible.
+
+MorePainting is here to make this process as simple as possible.
 
 <p align=center>
   <img width="747" height="628" alt="grafik" src="https://github.com/user-attachments/assets/7382493d-bf75-4bbf-98a5-5f382337f08d" />
