@@ -23,6 +23,7 @@ public class ArtTypes {
 	public static final Art DEFAULT = new Art("Minecraft", "Mojang", "Jeb", "morepainting:art/minecraft");
 	private static final TreeMap<Size, List<Art>> SIZE2ART_LIST = new TreeMap<>();
 	private static final Map<String, List<DataArt>> PICTURE_WITHOUT_SIZE = new HashMap<>();
+	private static int totalSize = 0;
 	private static final int MIN_WIDTH = 1;
 	private static final int MIN_HEIGHT = 1;
 	// TODO: fix the 16x16 size
@@ -53,11 +54,13 @@ public class ArtTypes {
 
 	public static void reload() {
 		ArtTypes.SIZE2ART_LIST.clear();
+		ArtTypes.totalSize = 0;
 		for (ArtType artType : ArtType.values) {
 			Size size = new Size(artType.sizeX, artType.sizeY);
 			Art art = new Art(artType.key, artType.title, artType.artist, artType.texture);
 			IconCoordinate texture = TextureRegistry.getTexture(artType.texture);
 			ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
+			ArtTypes.totalSize += 1;
 		}
 		TexturePackList packList = Minecraft.getMinecraft().texturePackList;
 		Collection<TexturePack> packs = new ArrayList<>();
@@ -102,6 +105,7 @@ public class ArtTypes {
 			Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
 			Art art = new Art(artType.key(), artType.title(), artType.artist(), artType.texture());
 			ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
+			ArtTypes.totalSize += 1;
 		}
 	}
 
@@ -119,6 +123,7 @@ public class ArtTypes {
 					Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
 					Art art = new Art(artType.key(), artType.title(), artType.artist(), artType.texture());
 					ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
+					ArtTypes.totalSize += 1;
 				} catch (IllegalArgumentException exception) {
 					LOGGER.error("Failed to load sizeless paintings from pack '{}': {}", packName, exception.getMessage());
 				}
@@ -204,26 +209,7 @@ public class ArtTypes {
 		return size.secondInt();
 	}
 
-	public static int getLargest() {
-		if (SIZE2ART_LIST.isEmpty()) {
-			return 0;
-		}
-		Size size = SIZE2ART_LIST.lastKey();
-		if (size == null) {
-			return 0;
-		}
-		return size.secondInt();
-	}
-
-	public static int getAverage() {
-		if (SIZE2ART_LIST.isEmpty()) {
-			return 0;
-		}
-		Size first = SIZE2ART_LIST.firstKey();
-		Size last = SIZE2ART_LIST.lastKey();
-		if (first == null || last == null) {
-			return 0;
-		}
-		return (int) Math.ceil((first.secondInt() + last.secondInt()) / 2.0);
+	public static int getTotalArtAmount(){
+		return totalSize;
 	}
 }

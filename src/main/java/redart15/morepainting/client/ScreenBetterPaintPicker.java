@@ -57,11 +57,13 @@ public class ScreenBetterPaintPicker extends Screen{
 		int scale = getScale(this.width, this.height);
 		int offsetX = 32 * scale;
 		int artGap = 2;
+
+		int maxInterations = ArtTypes.getTotalArtAmount();
 		this.indexEntries.clear();
 		this.indexEntries.add(new IndexEntry(this.centerArtIndex, centerX - offsetX, centerY - ((this.centerArtIndex.getY() * scale) / 2), 1.0f));
 		Index currentArtIndex = ArtTypes.getNext(this.centerArtIndex);
 		int dy = ((this.centerArtIndex.getY() * scale) / 2 + artGap) + 28;
-		while (!currentArtIndex.equals(this.centerArtIndex)) {
+		while (!currentArtIndex.equals(this.centerArtIndex) && maxInterations-- > 0) {
 			int pCenterY = dy;
 			float alpha = 1 - (float) pCenterY / (this.height / 2f);
 			this.indexEntries.add(new IndexEntry(currentArtIndex, centerX - offsetX, centerY + dy, alpha * 0.75f));
@@ -69,9 +71,10 @@ public class ScreenBetterPaintPicker extends Screen{
 			currentArtIndex = ArtTypes.getNext(currentArtIndex);
 		}
 
+		maxInterations = ArtTypes.getTotalArtAmount();
 		currentArtIndex = ArtTypes.getPrev(this.centerArtIndex);
 		dy = -((this.centerArtIndex.getY() * scale) / 2);
-		while (!currentArtIndex.equals(this.centerArtIndex)) {
+		while (!currentArtIndex.equals(this.centerArtIndex) && maxInterations-- > 0) {
 			dy -= ((currentArtIndex.getY() * scale) + artGap);
 			int pCenterY = dy + currentArtIndex.getY() * scale;
 			float alpha = 1 - (float) -pCenterY / (this.height / 2f);
