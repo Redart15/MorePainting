@@ -9,6 +9,7 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityPainting;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.World;
+import org.jetbrains.annotations.Contract;
 import org.joml.primitives.AABBd;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import redart15.morepainting.client.Index;
 import redart15.morepainting.client.Size;
 import redart15.morepainting.core.interfaces.PaintingIndex;
-import redart15.morepainting.core.mixin.accessor.EntityPaintingAccessor;
 
 @Mixin(value = EntityPainting.class, remap = false)
 public class EntityPaintingMixin implements PaintingIndex {
@@ -32,11 +32,13 @@ public class EntityPaintingMixin implements PaintingIndex {
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;IIIILjava/lang/String;)V", at = @At("TAIL"))
 	private void initIndex(World world, int x, int y, int z, int side, String motive, CallbackInfo ci){
 		this.index = Index.getDefaultIndex();
+		this.asThis.viewScale = 1.0F; // same as all render distance
 	}
 
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;)V", at= @At("TAIL"))
 	private void initIndex(World world, CallbackInfo ci){
 		this.index = Index.getDefaultIndex();
+		this.asThis.viewScale = 1.0F; // same as all render distance
 	}
 
 	@WrapMethod(method = "setDirection")
@@ -58,20 +60,20 @@ public class EntityPaintingMixin implements PaintingIndex {
 		double centerX = (double)this.asThis.blockX + (double)0.5F;
 		double centerY = (double)this.asThis.blockY + (double)0.5F;
 		double centerZ = (double)this.asThis.blockZ + (double)0.5F;
-		EntityPaintingAccessor accThis = (EntityPaintingAccessor) asThis;
 		if (direction == 0) {centerZ -= 0.53F;}
 		if (direction == 1) {centerX -= 0.53F;}
 		if (direction == 2) {centerZ += 0.53F;}
 		if (direction == 3) {centerX += 0.53F;}
-		if (direction == 0) {centerX -= accThis.callOffsetFromCenter(this.index.getX());}
-		if (direction == 1) {centerZ += accThis.callOffsetFromCenter(this.index.getX());}
-		if (direction == 2) {centerX += accThis.callOffsetFromCenter(this.index.getX());}
-		if (direction == 3) {centerZ -= accThis.callOffsetFromCenter(this.index.getX());}
-		centerY += accThis.callOffsetFromCenter(this.index.getY());
+		if (direction == 0) {centerX -= this.offsetFromCenter(this.index.getX());}
+		if (direction == 1) {centerZ += this.offsetFromCenter(this.index.getX());}
+		if (direction == 2) {centerX += this.offsetFromCenter(this.index.getX());}
+		if (direction == 3) {centerZ -= this.offsetFromCenter(this.index.getX());}
+		centerY += this.offsetFromCenter(this.index.getY());
 		this.asThis.setPos(centerX, centerY, centerZ);
+		float expand = -0.0F;
 		this.asThis.bb
-			.setMin(centerX - sizeX, centerY - sizeY, centerZ - sizeZ)
-			.setMax(centerX + sizeX, centerY + sizeY, centerZ + sizeZ);
+			.setMin(centerX - sizeX - expand, centerY - sizeY - expand, centerZ - sizeZ - expand)
+			.setMax(centerX + sizeX + expand, centerY + sizeY + expand, centerZ + sizeZ + expand);
 		if (direction == 0 || direction == 2) {
 			AABBd bounds = this.asThis.bb;
 			bounds.minZ -= 0.01F;
@@ -146,5 +148,12 @@ public class EntityPaintingMixin implements PaintingIndex {
 	@Override
 	public void morepainting$setIndex(Index index) {
 		this.index = index;
+	}
+
+	@Unique
+	@Contract(pure = true)
+	private float offsetFromCenter(int pixels) {
+		int blocks = pixels / 16;
+		return (blocks % 2 == 0) ? 0.5F : 0.0F;
 	}
 }
