@@ -10,7 +10,6 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.enums.ArtType;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -27,8 +26,8 @@ public class ArtTypes {
 	private static final int MIN_WIDTH = 1;
 	private static final int MIN_HEIGHT = 1;
 	// TODO: fix the 16x16 size
-	private static final int MAX_WIDTH = 15;
-	private static final int MAX_HEIGHT = 15;
+	private static final int MAX_WIDTH = 96;
+	private static final int MAX_HEIGHT = 54;
 	private static final int PIXEL_PER_BLOCK = 16;
 
 	private record DataArtTypeList(List<DataArt> paintings) {
@@ -82,8 +81,11 @@ public class ArtTypes {
 
 	}
 
-	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) {
+	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) throws IOException {
 		DataArtTypeList extraList = new Toml().read(stream).to(DataArtTypeList.class);
+		if(extraList == null){
+			throw new IOException();
+		}
 		for (DataArt artType : extraList.paintings()) {
 			// we need to let the TextureManager know about this texture
 			IconCoordinate texture = TextureRegistry.getTexture(artType.texture());
@@ -132,12 +134,11 @@ public class ArtTypes {
 		}
 	}
 
-	@Contract("_ -> new")
 	public static @NotNull Index getNext(@NotNull Index artIndex) {
 		int index = artIndex.index();
 		Size size = artIndex.size();
 		List<Art> artList = SIZE2ART_LIST.get(size);
-		if (index + 1 < artList.size()) {
+		if (artList != null && index + 1 < artList.size()) {
 			return new Index(index + 1, size);
 		}
 		Map.Entry<Size, List<Art>> next = SIZE2ART_LIST.higherEntry(size);
@@ -201,5 +202,28 @@ public class ArtTypes {
 			return 0;
 		}
 		return size.secondInt();
+	}
+
+	public static int getLargest() {
+		if (SIZE2ART_LIST.isEmpty()) {
+			return 0;
+		}
+		Size size = SIZE2ART_LIST.lastKey();
+		if (size == null) {
+			return 0;
+		}
+		return size.secondInt();
+	}
+
+	public static int getAverage() {
+		if (SIZE2ART_LIST.isEmpty()) {
+			return 0;
+		}
+		Size first = SIZE2ART_LIST.firstKey();
+		Size last = SIZE2ART_LIST.lastKey();
+		if (first == null || last == null) {
+			return 0;
+		}
+		return (int) Math.ceil((first.secondInt() + last.secondInt()) / 2.0);
 	}
 }

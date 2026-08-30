@@ -22,27 +22,31 @@ import java.util.List;
 public class ScreenBetterPaintPicker extends Screen{
 	private final Player player;
 	private Index centerArtIndex;
-	private List<IndexEntry> indexEntries = new ArrayList<>();
-	private int tallestSize;
+	private final List<IndexEntry> indexEntries = new ArrayList<>();
+	private int smallestSize;
 
-	private record IndexEntry(Index index, int x, int y, float alpha){}
+	private record IndexEntry(Index index, int x, int y, float alpha) {}
 
 	public ScreenBetterPaintPicker(Player player) {
 		this.centerArtIndex = Index.getDefaultIndex();
-		this.tallestSize = 0;
+		this.smallestSize = 0;
 		this.player = player;
-		this.tallestSize = ArtTypes.getSmallest();
-
+		this.smallestSize = ArtTypes.getSmallest();
 	}
 
 	@Override
 	public void init() {
 		super.init();
 		Index index = ((PaintingIndex) player).morepainting$getIndex();
-		if(index != null){
-			this.centerArtIndex = index;
-		}else{
-			((PaintingIndex) player).morepainting$setIndex(this.centerArtIndex);
+		// if index null, no update needed
+		if (index != null) {
+			// if nothing is at that index, get next valid picture
+			if (ArtTypes.getArt(index) == null) {
+				this.centerArtIndex = ArtTypes.getNext(index);
+			} else {
+				// otherwise update the index
+				((PaintingIndex) player).morepainting$setIndex(index);
+			}
 		}
 		this.updateArtEntries();
 	}
@@ -157,6 +161,6 @@ public class ScreenBetterPaintPicker extends Screen{
 	}
 
 	public int getScale(int width, int height) {
-		return Math.min((int)(height * 0.9F / this.tallestSize), this.mc.resolution.getScale());
+		return Math.min((int)(height * 0.9F / this.smallestSize), this.mc.resolution.getScale());
 	}
 }

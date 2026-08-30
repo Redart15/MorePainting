@@ -32,13 +32,13 @@ public class EntityPaintingMixin implements PaintingIndex {
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;IIIILjava/lang/String;)V", at = @At("TAIL"))
 	private void initIndex(World world, int x, int y, int z, int side, String motive, CallbackInfo ci){
 		this.index = Index.getDefaultIndex();
-		this.asThis.viewScale = 1.0F; // same as all render distance
+		this.asThis.viewScale = 1.0F; // same as all entities render distance
 	}
 
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;)V", at= @At("TAIL"))
 	private void initIndex(World world, CallbackInfo ci){
 		this.index = Index.getDefaultIndex();
-		this.asThis.viewScale = 1.0F; // same as all render distance
+		this.asThis.viewScale = 1.0F; // same as all entities render distance
 	}
 
 	@WrapMethod(method = "setDirection")
