@@ -10,6 +10,7 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.enums.ArtType;
+import net.minecraft.core.lang.I18n;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ import static redart15.morepainting.MorePainting.LOGGER;
 
 @Environment(EnvType.CLIENT)
 public class ArtTypes {
-	public static final Art DEFAULT = new Art("Minecraft", "Mojang", "Jeb", "morepainting:art/minecraft");
+	public static final Art DEFAULT = new Art("Mojang", "Jeb", "morepainting:art/minecraft");
 	private static final TreeMap<Size, List<Art>> SIZE2ART_LIST = new TreeMap<>();
 	private static final Map<String, List<DataArt>> PICTURE_WITHOUT_SIZE = new HashMap<>();
 	private static int totalSize = 0;
@@ -34,20 +35,16 @@ public class ArtTypes {
 	private record DataArtTypeList(List<DataArt> paintings) {
 	}
 
-	private record DataArt(String key, String title, String artist, String texture, Integer width, Integer height) {
-		@Override
-		public @NotNull String key() {
-			return this.key == null ? "???" : this.key;
-		}
+	private record DataArt(String title, String artist, String texture, Integer width, Integer height) {
 
 		@Override
 		public @NotNull String title() {
-			return this.title == null ? "Missing title" : this.title;
+			return this.title == null ? I18n.getInstance().translateKey("morepainting.missing.title") : this.title;
 		}
 
 		@Override
 		public @NotNull String artist() {
-			return this.artist == null ? "Unknown artist" : this.artist;
+			return this.artist == null ? I18n.getInstance().translateKey("morepainting.missing.artist") : this.artist;
 		}
 
 	}
@@ -57,7 +54,7 @@ public class ArtTypes {
 		ArtTypes.totalSize = 0;
 		for (ArtType artType : ArtType.values) {
 			Size size = new Size(artType.sizeX, artType.sizeY);
-			Art art = new Art(artType.key, artType.title, artType.artist, artType.texture);
+			Art art = new Art(artType.title, artType.artist, artType.texture);
 			IconCoordinate texture = TextureRegistry.getTexture(artType.texture);
 			ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
 			ArtTypes.totalSize += 1;
@@ -100,10 +97,10 @@ public class ArtTypes {
 			int height = artType.height();
 			int width = artType.width();
 			if (width < MIN_WIDTH || height < MIN_HEIGHT || width > MAX_WIDTH || height > MAX_HEIGHT) {
-				throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.key(), width, height));
+				throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 			}
 			Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
-			Art art = new Art(artType.key(), artType.title(), artType.artist(), artType.texture());
+			Art art = new Art(artType.title(), artType.artist(), artType.texture());
 			ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
 			ArtTypes.totalSize += 1;
 		}
@@ -118,10 +115,10 @@ public class ArtTypes {
 					int width = (int) Math.ceil(texture.width / 16.0F);
 					int height = (int) Math.ceil(texture.height / 16.0F);
 					if (width <= 0 || height <= 0 || width > MAX_WIDTH || height > MAX_HEIGHT) {
-						throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.key(), width, height));
+						throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 					}
 					Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
-					Art art = new Art(artType.key(), artType.title(), artType.artist(), artType.texture());
+					Art art = new Art(artType.title(), artType.artist(), artType.texture());
 					ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
 					ArtTypes.totalSize += 1;
 				} catch (IllegalArgumentException exception) {
@@ -133,7 +130,7 @@ public class ArtTypes {
 	}
 
 
-	public record Art(String key, String title, String artist, String texture) {
+	public record Art(String title, String artist, String texture) {
 		public @NotNull IconCoordinate getTexture() {
 			return TextureRegistry.getTexture(this.texture);
 		}
