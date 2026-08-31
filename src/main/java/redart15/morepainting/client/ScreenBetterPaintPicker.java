@@ -20,18 +20,15 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class ScreenBetterPaintPicker extends Screen{
+	public static final int ART_GAP = 2;
 	private final Player player;
 	private Index centerArtIndex;
+	private float centerScale;
 	private final List<IndexEntry> indexEntries = new ArrayList<>();
-	private int smallestSize;
-
-	private record IndexEntry(Index index, int x, int y, float alpha) {}
 
 	public ScreenBetterPaintPicker(Player player) {
 		this.centerArtIndex = Index.getDefaultIndex();
-		this.smallestSize = 0;
 		this.player = player;
-		this.smallestSize = ArtTypes.getSmallest();
 	}
 
 	@Override
@@ -45,40 +42,52 @@ public class ScreenBetterPaintPicker extends Screen{
 				this.centerArtIndex = ArtTypes.getNext(index);
 			} else {
 				// otherwise update the index
-				((PaintingIndex) player).morepainting$setIndex(index);
+				this.centerArtIndex = index;
 			}
+			((PaintingIndex) player).morepainting$setIndex(this.centerArtIndex);
 		}
 		this.updateArtEntries();
 	}
 
 	private void updateArtEntries() {
+		// flush list
+		this.indexEntries.clear();
+		// calc center
 		int centerX = this.width / 2;
 		int centerY = this.height / 2;
-		int scale = getScale(this.width, this.height);
-		int offsetX = 32 * scale;
-		int artGap = 2;
-
+		// center is the first painting in list
+		this.centerScale = this.getScaleF(this.centerArtIndex.getX(), this.centerArtIndex.getY());
+		int centerWidth = Math.round(this.centerArtIndex.getX() * centerScale);
+		int centerHeight = Math.round(this.centerArtIndex.getY() * centerScale);
+		int x = centerX - Math.round(centerWidth / 2.0f);
+		int y = centerY - Math.round(centerHeight / 2.0f);
+		this.indexEntries.add(new IndexEntry(this.centerArtIndex, x, y, 1.0f, centerScale));
+		// max iteration to prevent out of memory exceptions
 		int maxInterations = ArtTypes.getTotalArtAmount();
-		this.indexEntries.clear();
-		this.indexEntries.add(new IndexEntry(this.centerArtIndex, centerX - offsetX, centerY - ((this.centerArtIndex.getY() * scale) / 2), 1.0f));
+		// get next index, forward list
 		Index currentArtIndex = ArtTypes.getNext(this.centerArtIndex);
-		int dy = ((this.centerArtIndex.getY() * scale) / 2 + artGap) + 28;
+		float dy = ((this.centerArtIndex.getY() * centerScale) / 2f + ART_GAP) + 28;
 		while (!currentArtIndex.equals(this.centerArtIndex) && maxInterations-- > 0) {
-			int pCenterY = dy;
-			float alpha = 1 - (float) pCenterY / (this.height / 2f);
-			this.indexEntries.add(new IndexEntry(currentArtIndex, centerX - offsetX, centerY + dy, alpha * 0.75f));
-			dy += ((currentArtIndex.getY() * scale) + artGap);
+			float entryScale = this.getScaleF(currentArtIndex.getX(), currentArtIndex.getY());
+			float alpha = 1 - Math.round(dy) / (this.height / 2f);
+			int cx = centerX - Math.round(currentArtIndex.getX() * entryScale / 2.0f);
+			int cy = centerY + Math.round(dy);
+			this.indexEntries.add(new IndexEntry(currentArtIndex, cx, cy, alpha * 0.75f, entryScale));
+			dy += ((currentArtIndex.getY() * entryScale) + ART_GAP);
 			currentArtIndex = ArtTypes.getNext(currentArtIndex);
 		}
-
+		// reset
 		maxInterations = ArtTypes.getTotalArtAmount();
+		// get prev index, reverse list
 		currentArtIndex = ArtTypes.getPrev(this.centerArtIndex);
-		dy = -((this.centerArtIndex.getY() * scale) / 2);
+		dy = -((this.centerArtIndex.getY() * centerScale) / 2);
 		while (!currentArtIndex.equals(this.centerArtIndex) && maxInterations-- > 0) {
-			dy -= ((currentArtIndex.getY() * scale) + artGap);
-			int pCenterY = dy + currentArtIndex.getY() * scale;
-			float alpha = 1 - (float) -pCenterY / (this.height / 2f);
-			this.indexEntries.add(new IndexEntry(currentArtIndex, centerX - offsetX, centerY + dy, alpha * 0.75f));
+			float entryScale = this.getScaleF(currentArtIndex.getX(), currentArtIndex.getY());
+			dy -= ((currentArtIndex.getY() * entryScale) + ART_GAP);
+			float alpha = 1 + Math.round(dy + currentArtIndex.getY() * entryScale) / (this.height / 2f);
+			int x1 = centerX - Math.round(currentArtIndex.getX() * entryScale / 2.0f);
+			int y1 = centerY + Math.round(dy);
+			this.indexEntries.add(new IndexEntry(currentArtIndex, x1, y1, alpha * 0.75f, entryScale));
 			currentArtIndex = ArtTypes.getPrev(currentArtIndex);
 		}
 	}
@@ -100,58 +109,61 @@ public class ScreenBetterPaintPicker extends Screen{
 	@Override
 	public void mouseClicked(int mx, int my, int buttonNum) {
 		super.mouseClicked(mx, my, buttonNum);
-		int scale = this.getScale(this.width, this.height);
-		if (buttonNum == 0) {
-			for(IndexEntry indexEntry : this.indexEntries) {
-				Index index = indexEntry.index();
-				if (mx >= indexEntry.x && mx <= indexEntry.x + index.getX() * scale && my >= indexEntry.y && my <= indexEntry.y + index.getY() * scale) {
-					((PaintingIndex) player).morepainting$setIndex(index);
-					this.mc.displayScreen(null);
-					break;
-				}
+		if (buttonNum != 0) {
+			return;
+		}
+		for(IndexEntry indexEntry : this.indexEntries) {
+			Index index = indexEntry.index;
+			if (mx >= indexEntry.x
+				&& mx <= indexEntry.x + index.getX() * indexEntry.scale
+				&& my >= indexEntry.y
+				&& my <= indexEntry.y + index.getY() * indexEntry.scale
+			) {
+				((PaintingIndex) player).morepainting$setIndex(index);
+				this.mc.displayScreen(null);
+				break;
 			}
 		}
 
 	}
 
 	private void drawPaintings(int screenWidth, int screenHeight, int mouseX, int mouseY) {
+		// calc center
 		int centerX = screenWidth / 2;
 		int centerY = screenHeight / 2;
-		int scale = this.getScale(screenWidth, screenHeight);
-		int offsetX = 32 * scale;
+		// get client side art
 		ArtTypes.Art art = ArtTypes.getArt(this.centerArtIndex);
-		this.drawStringShadow(this.fontRenderer, art.title(), centerX - offsetX, centerY + this.centerArtIndex.getY() / 2 * scale + 4, -1);
-		this.drawStringShadow(this.fontRenderer, art.artist(), centerX - offsetX, centerY + this.centerArtIndex.getY() / 2 * scale + 16, 2139062143);
+		int zx = centerX - Math.round(this.centerArtIndex.getX() / 2F * this.centerScale);
+		int zyTitle = centerY + Math.round(this.centerArtIndex.getY() / 2f * this.centerScale + 4);
+		this.drawStringShadow(this.fontRenderer, art.title(), zx, zyTitle, 0xffffffff);
+		int zyArtist = centerY + Math.round(this.centerArtIndex.getY() / 2f * this.centerScale + 16);
+		this.drawStringShadow(this.fontRenderer, art.artist(), zx, zyArtist, 0x7f7f7f7f);
 		GLRenderer.pushFrame();
 		GLRenderer.enableState(State.BLEND);
 		GLRenderer.setBlendFunc(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA);
-
 		for(IndexEntry entry : this.indexEntries) {
 			if (entry.alpha <= 0.0F) {
 				continue;
 			}
 			GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			Index index = entry.index();
-			if (mouseX > entry.x && mouseX < entry.x + index.getX() * scale && mouseY > entry.y && mouseY < entry.y + index.getY() * scale) {
+			Index index = entry.index;
+			IconCoordinate texture = ArtTypes.getArt(index).getTexture();
+			if (mouseX > entry.x && mouseX < entry.x + index.getX() * entry.scale && mouseY > entry.y && mouseY < entry.y + index.getY() * entry.scale) {
+				int borderOffset = Math.max(2, Math.round(entry.scale));
 				GLRenderer.setShader(Shaders.COLOR);
-				this.drawRectWidthHeight(entry.x - scale, entry.y - scale, (index.getX() + 2) * scale, (index.getY() + 2) * scale, -1);
+				int boarderWidth = Math.round((index.getX()) * entry.scale) + 2 * borderOffset;
+				int boarderHeight = Math.round((index.getY()) * entry.scale) + 2 * borderOffset;
+				this.drawRectWidthHeight(entry.x - borderOffset, entry.y - borderOffset, boarderWidth, boarderHeight, 0xffffffff);
 				GLRenderer.setShader(Shaders.INTERFACE);
-				this.drawPainting(index, entry.x, entry.y, index.getX(), index.getY(), 1.0F);
+				this.drawPainting(entry.x, entry.y, index.getX() * entry.scale, index.getY() * entry.scale, texture, 1.0F);
 			} else {
-				this.drawPainting(index, entry.x, entry.y, index.getX(), index.getY(), entry.alpha);
+				this.drawPainting(entry.x, entry.y, index.getX() * entry.scale, index.getY() * entry.scale, texture, entry.alpha);
 			}
 		}
-
 		GLRenderer.popFrame();
 	}
 
-	private void drawPainting(Index index, int x, int y, int width, int height, float alpha) {
-		int scale = this.getScale(this.width, this.height);
-		IconCoordinate texture = ArtTypes.getArt(index).getTexture();
-		this.drawTexturedIconPainting(x, y, width * scale, height * scale, texture, alpha);
-	}
-
-	public void drawTexturedIconPainting(int x, int y, int width, int height, @NotNull IconCoordinate coordinate, float alpha) {
+	public void drawPainting(int x, int y, float width, float height, @NotNull IconCoordinate coordinate, float alpha) {
 		coordinate.parentAtlas.bind();
 		TessellatorGeneral tessellator = GLRenderer.getTessellator();
 		GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, alpha);
@@ -163,7 +175,26 @@ public class ScreenBetterPaintPicker extends Screen{
 		tessellator.draw();
 	}
 
-	public int getScale(int width, int height) {
-		return Math.min((int)(height * 0.9F / this.smallestSize), this.mc.resolution.getScale());
+	private float getScaleF(int artWidth, int artHeight){
+		int screenHeight = this.height;
+		int scale = this.mc.resolution.getScale();
+		int highest = Math.max(artHeight, artWidth);
+		return Math.min(screenHeight * 0.5F / highest, scale);
+	}
+
+	private static class IndexEntry {
+		final Index index;
+		final int x;
+		final int y;
+		final float alpha;
+		final float scale;
+
+		public IndexEntry(Index index, int x, int y, float alpha, float scale) {
+			this.index = index;
+			this.x = x;
+			this.y = y;
+			this.alpha = alpha;
+			this.scale = scale;
+		}
 	}
 }
