@@ -10,8 +10,10 @@ import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.enums.ArtType;
-import net.minecraft.core.lang.I18n;
 import org.jetbrains.annotations.NotNull;
+import redart15.morepainting.client.data.DataArt;
+import redart15.morepainting.client.data.DataArtTypeList;
+import redart15.morepainting.client.data.DataSize;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,23 +33,7 @@ public class ArtTypes {
 	private static final int MAX_HEIGHT = 100;
 	private static final int PIXEL_PER_BLOCK = 16;
 
-	private record DataArtTypeList(List<DataArt> paintings) {}
-
-	private record DataArt(String title, String artist, String texture, DataSize dimensions, Double scaled) {
-
-		@Override
-		public @NotNull String title() {
-			return this.title == null ? I18n.getInstance().translateKey("morepainting.missing.title") : this.title;
-		}
-
-		@Override
-		public @NotNull String artist() {
-			return this.artist == null ? I18n.getInstance().translateKey("morepainting.missing.artist") : this.artist;
-		}
-
-	}
-
-	private record DataSize(Integer width, Integer height){}
+	private ArtTypes(){}
 
 	@SuppressWarnings("java:S1854")
 	public static void reload() {
@@ -65,7 +51,8 @@ public class ArtTypes {
 		packs.add(packList.getDefaultTexturePack());
 		packs.addAll(packList.selectedPacks);
 		for (TexturePack pack : packs) {
-			for (String namespace : Registries.NAMESPACES) {
+			String namespace = "minecraft";
+//			for (String namespace : Registries.NAMESPACES) {
 				try (InputStream stream = pack.getResourceAsStream("/assets/" + namespace + "/textures/art/painting.toml")) {
 					List<DataArt> sizeLessPictures = PICTURE_WITHOUT_SIZE.computeIfAbsent(pack.fileName, key -> new ArrayList<>());
 					if (stream == null) {
@@ -77,7 +64,7 @@ public class ArtTypes {
 				} catch (IllegalArgumentException exception) {
 					LOGGER.error("Invalid painting in pack '{}': {}", pack.fileName, exception.getMessage());
 				}
-			}
+//			}
 		}
 
 	}
@@ -137,13 +124,6 @@ public class ArtTypes {
 		return new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
 	}
 
-
-	public record Art(String title, String artist, String texture) {
-
-		public @NotNull IconCoordinate getTexture() {
-			return TextureRegistry.getTexture(this.texture);
-		}
-	}
 
 	public static @NotNull Index getNext(@NotNull Index artIndex) {
 		int index = artIndex.index();
@@ -206,5 +186,29 @@ public class ArtTypes {
 
 	public static int getTotalArtAmount(){
 		return totalSize;
+	}
+
+	public static class Art {
+		String title;
+		String artist;
+		String texture;
+
+		public Art(String title, String artist, String texture){
+			this.title = title;
+			this.artist = artist;
+			this.texture = texture;
+		}
+
+		public @NotNull String title() {
+			return this.title;
+		}
+
+		public @NotNull String artist() {
+			return this.artist;
+		}
+
+		public @NotNull IconCoordinate getTexture() {
+			return TextureRegistry.getTexture(this.texture);
+		}
 	}
 }

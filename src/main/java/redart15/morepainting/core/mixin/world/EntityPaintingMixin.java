@@ -8,9 +8,9 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityPainting;
 import net.minecraft.core.util.helper.MathHelper;
+import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.Contract;
-import org.joml.primitives.AABBd;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -71,18 +71,23 @@ public class EntityPaintingMixin implements PaintingIndex {
 		centerY += this.offsetFromCenter(this.index.getY());
 		this.asThis.setPos(centerX, centerY, centerZ);
 		float expand = -0.0F;
-		this.asThis.bb
-			.setMin(centerX - sizeX - expand, centerY - sizeY - expand, centerZ - sizeZ - expand)
-			.setMax(centerX + sizeX + expand, centerY + sizeY + expand, centerZ + sizeZ + expand);
+		this.asThis.bb.set(
+			centerX - sizeX - expand,
+			centerY - sizeY - expand,
+			centerZ - sizeZ - expand,
+			centerX + sizeX + expand,
+			centerY + sizeY + expand,
+			centerZ + sizeZ + expand
+		);
 		if (direction == 0 || direction == 2) {
-			AABBd bounds = this.asThis.bb;
+			AABB bounds = this.asThis.bb;
 			bounds.minZ -= 0.01F;
 			bounds = this.asThis.bb;
 			bounds.maxZ += 0.01F;
 		}
 
 		if (direction == 1 || direction == 3) {
-			AABBd bounds = this.asThis.bb;
+			AABB bounds = this.asThis.bb;
 			bounds.minX -= 0.01F;
 			bounds = this.asThis.bb;
 			bounds.maxX += 0.01F;

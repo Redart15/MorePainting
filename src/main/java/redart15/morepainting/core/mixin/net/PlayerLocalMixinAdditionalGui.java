@@ -26,7 +26,7 @@ public abstract class PlayerLocalMixinAdditionalGui extends PlayerMixin implemen
 	@Override
 	public void morepainting$setIndex(Index index){
 		this.index = index;
-		if(!EnvironmentHelper.isSingleplayerClient()){
+		if(!EnvironmentHelper.isSinglePlayer()){
 			NetworkHandler.sendToServer(new UpdateIndexMessage(this.index));
 		}
 	}

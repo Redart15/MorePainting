@@ -1,12 +1,10 @@
 package redart15.morepainting.client;
 
-import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import redart15.morepainting.client.data.IntIntPair;
 
-import java.util.Objects;
-
-public class Size extends IntIntMutablePair implements Comparable<Size>{
+public class Size extends IntIntPair implements Comparable<Size>{
 	private static final int SX = 16;
 	private static final int SY = 16;
 

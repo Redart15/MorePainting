@@ -18,21 +18,23 @@ import redart15.morepainting.core.interfaces.PaintingIndex;
 @Mixin(value = PacketHandlerClient.class, remap = false)
 public abstract class PacketHandlerClientMixin {
 
-	@Inject(method = "handleAddPainting", at = @At(value = "INVOKE", target = "Ljava/util/Map;containsKey(Ljava/lang/Object;)Z"))
+	@Inject(method = "handleEntityPainting", at = @At(value = "INVOKE", target = "Ljava/util/Map;containsKey(Ljava/lang/Object;)Z"))
 	private void handleSizeWithExistingEntity(
 		PacketAddPainting packetAddPainting, CallbackInfo ci,
 		@Local EntityPainting entityPainting
 		){
-		if(entityPainting instanceof PaintingIndex paintingIndex
-			&& packetAddPainting instanceof PaintingIndex packetPaintingIndex
+		if(entityPainting instanceof PaintingIndex
+			&& packetAddPainting instanceof PaintingIndex
 		){
+			PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
+			PaintingIndex packetPaintingIndex = (PaintingIndex) packetAddPainting;
 			Index index = packetPaintingIndex.morepainting$getIndex();
 			paintingIndex.morepainting$setIndex(index);
 		}
 	}
 
 	@WrapOperation(
-		method = "handleAddPainting",
+		method = "handleEntityPainting",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/world/WorldClientMP;addEntityToWorld(ILnet/minecraft/core/entity/Entity;)V"
@@ -44,10 +46,13 @@ public abstract class PacketHandlerClientMixin {
 		Operation<Void> original,
 		@Local(argsOnly = true) PacketAddPainting packetAddPainting
 	) {
-		if (entity instanceof PaintingIndex paintingIndex
-			&& entity instanceof EntityPainting entityPainting
-			&& packetAddPainting instanceof PaintingIndex packetPaintingIndex
+		if (entity instanceof PaintingIndex
+			&& entity instanceof EntityPainting
+			&& packetAddPainting instanceof PaintingIndex
 		) {
+			EntityPainting entityPainting = (EntityPainting) entity;
+			PaintingIndex paintingIndex = (PaintingIndex) entity;
+			PaintingIndex packetPaintingIndex = (PaintingIndex) packetAddPainting;
 			Index index = packetPaintingIndex.morepainting$getIndex();
 			paintingIndex.morepainting$setIndex(index);
 			entityPainting.setDirection(packetAddPainting.direction);

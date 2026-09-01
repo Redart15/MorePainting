@@ -3,15 +3,12 @@ package redart15.morepainting.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.render.renderer.BlendFactor;
-import net.minecraft.client.render.renderer.GLRenderer;
-import net.minecraft.client.render.renderer.Shaders;
-import net.minecraft.client.render.renderer.State;
-import net.minecraft.client.render.tessellator.TessellatorGeneral;
+import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.client.render.texture.stitcher.IconCoordinate;
 import net.minecraft.core.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 import redart15.morepainting.core.interfaces.PaintingIndex;
 
 import java.util.ArrayList;
@@ -134,43 +131,44 @@ public class ScreenBetterPaintPicker extends Screen{
 		// get client side art
 		ArtTypes.Art art = ArtTypes.getArt(this.centerArtIndex);
 		int zx = centerX - Math.round(this.centerArtIndex.getX() / 2F * this.centerScale);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		int zyTitle = centerY + Math.round(this.centerArtIndex.getY() / 2f * this.centerScale + 4);
-		this.drawStringShadow(this.fontRenderer, art.title(), zx, zyTitle, 0xffffffff);
+		this.drawString(this.font, art.title(), zx, zyTitle, 0xffffffff);
 		int zyArtist = centerY + Math.round(this.centerArtIndex.getY() / 2f * this.centerScale + 16);
-		this.drawStringShadow(this.fontRenderer, art.artist(), zx, zyArtist, 0x7f7f7f7f);
-		GLRenderer.pushFrame();
-		GLRenderer.enableState(State.BLEND);
-		GLRenderer.setBlendFunc(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA);
+		this.drawString(this.font, art.artist(), zx, zyArtist, 0x7f7f7f7f);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		for(IndexEntry entry : this.indexEntries) {
 			if (entry.alpha <= 0.0F) {
 				continue;
 			}
-			GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			Index index = entry.index;
 			IconCoordinate texture = ArtTypes.getArt(index).getTexture();
 			if (mouseX > entry.x && mouseX < entry.x + index.getX() * entry.scale && mouseY > entry.y && mouseY < entry.y + index.getY() * entry.scale) {
 				int borderOffset = Math.max(2, Math.round(entry.scale));
-				GLRenderer.setShader(Shaders.COLOR);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				int boarderWidth = Math.round((index.getX()) * entry.scale) + 2 * borderOffset;
 				int boarderHeight = Math.round((index.getY()) * entry.scale) + 2 * borderOffset;
 				this.drawRectWidthHeight(entry.x - borderOffset, entry.y - borderOffset, boarderWidth, boarderHeight, 0xffffffff);
-				GLRenderer.setShader(Shaders.INTERFACE);
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				this.drawPainting(entry.x, entry.y, index.getX() * entry.scale, index.getY() * entry.scale, texture, 1.0F);
 			} else {
 				this.drawPainting(entry.x, entry.y, index.getX() * entry.scale, index.getY() * entry.scale, texture, entry.alpha);
 			}
 		}
-		GLRenderer.popFrame();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	public void drawPainting(int x, int y, float width, float height, @NotNull IconCoordinate coordinate, float alpha) {
 		coordinate.parentAtlas.bind();
-		TessellatorGeneral tessellator = GLRenderer.getTessellator();
-		GLRenderer.setColor4f(1.0F, 1.0F, 1.0F, alpha);
+		Tessellator tessellator = Tessellator.instance;
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, alpha);
 		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(x, (double) y + height, this.zLevel, coordinate.getIconUMin(), coordinate.getIconVMax());
-		tessellator.addVertexWithUV((double)x + width, (double)y + height, this.zLevel, coordinate.getIconUMax(), coordinate.getIconVMax());
-		tessellator.addVertexWithUV((double)x + width, y, this.zLevel, coordinate.getIconUMax(), coordinate.getIconVMin());
+		tessellator.addVertexWithUV(x, y + height, this.zLevel, coordinate.getIconUMin(), coordinate.getIconVMax());
+		tessellator.addVertexWithUV(x + width, y + height, this.zLevel, coordinate.getIconUMax(), coordinate.getIconVMax());
+		tessellator.addVertexWithUV(x + width, y, this.zLevel, coordinate.getIconUMax(), coordinate.getIconVMin());
 		tessellator.addVertexWithUV(x, y, this.zLevel, coordinate.getIconUMin(), coordinate.getIconVMin());
 		tessellator.draw();
 	}

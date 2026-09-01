@@ -23,7 +23,8 @@ public class PacketAddPaintingMixin implements PaintingIndex{
 
 	@Inject(method = "<init>(Lnet/minecraft/core/entity/EntityPainting;)V", at = @At("TAIL"))
 	private void addIndex(EntityPainting entitypainting, CallbackInfo ci){
-		if(entitypainting instanceof PaintingIndex paintingIndex){
+		if(entitypainting instanceof PaintingIndex){
+			PaintingIndex paintingIndex = (PaintingIndex) entitypainting;
 			this.index = paintingIndex.morepainting$getIndex();
 		}else {
 			this.index = Index.getDefaultIndex();

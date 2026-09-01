@@ -5,23 +5,42 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public record Index(int index, Size size){
+public class Index{
+	private final int index;
+	private final Size size;
+
+	public Index(int index, Size size){
+		this.index = index;
+		this.size = size;
+	}
+
 	@Contract(" -> new")
 	public static @NotNull Index getDefaultIndex() {
 		return new Index(0, Size.getSmallest());
 	}
 
 	public int getX(){
-		return this.size().firstInt();
+		return this.size.firstInt();
 	}
 
 	public int getY(){
-		return this.size().secondInt();
+		return this.size.secondInt();
+	}
+
+	public Size size(){
+		return this.size;
+	}
+
+	public int index(){
+		return this.index;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (!(object instanceof Index other)) return false;
+		if (!(object instanceof Index)) {
+			return false;
+		}
+		Index other = (Index) object;
 		return this.index == other.index && this.size.equals(other.size);
 	}
 

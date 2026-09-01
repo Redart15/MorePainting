@@ -14,4 +14,9 @@ public class MinecraftMixin {
 	private void assignSizes(CallbackInfo ci){
 		ArtTypes.loadPictureWithOutSize();
 	}
+
+	@Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundRepository;initialize(Lnet/minecraft/client/Minecraft;)V"))
+	private void initArtTypeList(CallbackInfo ci){
+		ArtTypes.reload();
+	}
 }

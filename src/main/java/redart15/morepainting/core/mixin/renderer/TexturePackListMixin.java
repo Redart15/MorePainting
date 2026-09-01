@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import redart15.morepainting.client.ArtTypes;
 
 @Mixin(value = TexturePackList.class, remap = false)
@@ -15,12 +16,7 @@ public abstract class TexturePackListMixin {
 		ArtTypes.reload();
 	}
 
-	@Inject(method = "init", at = @At("TAIL"))
-	private void initArtTypeList(CallbackInfo ci){
-		ArtTypes.reload();
-	}
-
-	@Inject(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundRepository;reload()V", shift = At.Shift.BEFORE))
+	@Inject(method = "refresh", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundRepository;reload()V"))
 	private void assignSizes(CallbackInfo ci){
 		ArtTypes.loadPictureWithOutSize();
 	}
