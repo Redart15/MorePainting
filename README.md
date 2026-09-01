@@ -12,7 +12,7 @@ MorePainting is here to make this process as simple as possible.
   <img width="747" height="628" alt="grafik" src="https://github.com/user-attachments/assets/7382493d-bf75-4bbf-98a5-5f382337f08d" />
 </p>
 
-## 🖌️ More Paintings
+## 🖌️ More Paintings 8.0
 More Painting, does not add itself more painting.
 Instead it reworks how the painting system in BTA works.
 This allows asset packs to add more paintings.
