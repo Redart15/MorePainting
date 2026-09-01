@@ -27,15 +27,13 @@ public class ArtTypes {
 	private static int totalSize = 0;
 	private static final int MIN_WIDTH = 1;
 	private static final int MIN_HEIGHT = 1;
-	// TODO: fix the 16x16 size
-	private static final int MAX_WIDTH = 96;
-	private static final int MAX_HEIGHT = 54;
+	private static final int MAX_WIDTH = 100;
+	private static final int MAX_HEIGHT = 100;
 	private static final int PIXEL_PER_BLOCK = 16;
 
-	private record DataArtTypeList(List<DataArt> paintings) {
-	}
+	private record DataArtTypeList(List<DataArt> paintings) {}
 
-	private record DataArt(String title, String artist, String texture, Integer width, Integer height) {
+	private record DataArt(String title, String artist, String texture, DataSize dimensions, Double scaled) {
 
 		@Override
 		public @NotNull String title() {
@@ -49,6 +47,9 @@ public class ArtTypes {
 
 	}
 
+	private record DataSize(Integer width, Integer height){}
+
+	@SuppressWarnings("java:S1854")
 	public static void reload() {
 		ArtTypes.SIZE2ART_LIST.clear();
 		ArtTypes.totalSize = 0;
@@ -81,6 +82,7 @@ public class ArtTypes {
 
 	}
 
+	@SuppressWarnings("java:S1854")
 	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) throws IOException {
 		DataArtTypeList extraList = new Toml().read(stream).to(DataArtTypeList.class);
 		if(extraList == null){
@@ -90,12 +92,13 @@ public class ArtTypes {
 			// we need to let the TextureManager know about this texture
 			IconCoordinate texture = TextureRegistry.getTexture(artType.texture());
 			// once all IconCoordinates are initialized we will sort them manually back in
-			if (artType.height() == null || artType.width() == null) {
+			DataSize dim = artType.dimensions();
+			if (dim == null || dim.height() == null || dim.width() == null) {
 				sizeLessPictures.add(artType);
 				continue;
 			}
-			int height = artType.height();
-			int width = artType.width();
+			int width = dim.width();
+			int height = dim.height();
 			if (width < MIN_WIDTH || height < MIN_HEIGHT || width > MAX_WIDTH || height > MAX_HEIGHT) {
 				throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 			}
@@ -112,12 +115,7 @@ public class ArtTypes {
 			for (DataArt artType : entry.getValue()) {
 				try {
 					IconCoordinate texture = TextureRegistry.getTexture(artType.texture());
-					int width = (int) Math.ceil(texture.width / 16.0F);
-					int height = (int) Math.ceil(texture.height / 16.0F);
-					if (width <= 0 || height <= 0 || width > MAX_WIDTH || height > MAX_HEIGHT) {
-						throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
-					}
-					Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
+					Size size = ArtTypes.getSize(artType, texture);
 					Art art = new Art(artType.title(), artType.artist(), artType.texture());
 					ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
 					ArtTypes.totalSize += 1;
@@ -129,8 +127,19 @@ public class ArtTypes {
 		PICTURE_WITHOUT_SIZE.clear();
 	}
 
+	private static @NotNull Size getSize(DataArt artType, IconCoordinate texture) {
+		double scale =artType.scaled() == null || artType.scaled() < 0 ? 1.0F : artType.scaled();
+		int width = (int) Math.ceil(texture.width / (16.0F * scale));
+		int height = (int) Math.ceil(texture.height / (16.0F * scale));
+		if (width <= 0 || height <= 0 || width > MAX_WIDTH || height > MAX_HEIGHT) {
+			throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
+		}
+		return new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
+	}
+
 
 	public record Art(String title, String artist, String texture) {
+
 		public @NotNull IconCoordinate getTexture() {
 			return TextureRegistry.getTexture(this.texture);
 		}
@@ -193,17 +202,6 @@ public class ArtTypes {
 			return DEFAULT;
 		}
 		return art;
-	}
-
-	public static int getSmallest() {
-		if (SIZE2ART_LIST.isEmpty()) {
-			return 0;
-		}
-		Size size = SIZE2ART_LIST.firstKey();
-		if (size == null) {
-			return 0;
-		}
-		return size.secondInt();
 	}
 
 	public static int getTotalArtAmount(){
