@@ -6,6 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public record Index(int index, Size size){
+	public static final int MIN_WIDTH = 1;
+	public static final int MIN_HEIGHT = 1;
+	public static final int MAX_WIDTH = 100;
+	public static final int MAX_HEIGHT = 100;
+	public static final int PIXEL_PER_BLOCK = 16;
+
+
 	@Contract(" -> new")
 	public static @NotNull Index getDefaultIndex() {
 		return new Index(0, Size.getSmallest());
@@ -17,6 +24,16 @@ public record Index(int index, Size size){
 
 	public int getY(){
 		return this.size().secondInt();
+	}
+
+	public @NotNull Index setX(int first){
+		this.size().first(first);
+		return this;
+	}
+
+	public @NotNull Index setY(int second){
+		this.size().second(second);
+		return this;
 	}
 
 	@Override

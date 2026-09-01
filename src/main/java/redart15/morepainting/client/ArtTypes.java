@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import static redart15.morepainting.MorePainting.LOGGER;
+import static redart15.morepainting.client.Index.*;
 
 @Environment(EnvType.CLIENT)
 public class ArtTypes {
@@ -25,11 +26,6 @@ public class ArtTypes {
 	private static final TreeMap<Size, List<Art>> SIZE2ART_LIST = new TreeMap<>();
 	private static final Map<String, List<DataArt>> PICTURE_WITHOUT_SIZE = new HashMap<>();
 	private static int totalSize = 0;
-	private static final int MIN_WIDTH = 1;
-	private static final int MIN_HEIGHT = 1;
-	private static final int MAX_WIDTH = 100;
-	private static final int MAX_HEIGHT = 100;
-	private static final int PIXEL_PER_BLOCK = 16;
 
 	private record DataArtTypeList(List<DataArt> paintings) {}
 
