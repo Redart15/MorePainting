@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import redart15.morepainting.client.Index;
 import redart15.morepainting.core.interfaces.PaintingIndex;
 
 @Mixin(value = PacketHandlerClient.class, remap = false)
@@ -28,8 +27,9 @@ public abstract class PacketHandlerClientMixin {
 		){
 			PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
 			PaintingIndex packetPaintingIndex = (PaintingIndex) packetAddPainting;
-			Index index = packetPaintingIndex.morepainting$getIndex();
-			paintingIndex.morepainting$setIndex(index);
+			paintingIndex.morepainting$setIndex(packetPaintingIndex.morepainting$getIndex());
+			paintingIndex.morepainting$setDefaultRendering(packetPaintingIndex.morepainting$isDefaultRendering());
+
 		}
 	}
 
@@ -53,8 +53,8 @@ public abstract class PacketHandlerClientMixin {
 			EntityPainting entityPainting = (EntityPainting) entity;
 			PaintingIndex paintingIndex = (PaintingIndex) entity;
 			PaintingIndex packetPaintingIndex = (PaintingIndex) packetAddPainting;
-			Index index = packetPaintingIndex.morepainting$getIndex();
-			paintingIndex.morepainting$setIndex(index);
+			paintingIndex.morepainting$setIndex(packetPaintingIndex.morepainting$getIndex());
+			paintingIndex.morepainting$setDefaultRendering(packetPaintingIndex.morepainting$isDefaultRendering());
 			entityPainting.setDirection(packetAddPainting.direction);
 		}
 		original.call(world, id, entity);

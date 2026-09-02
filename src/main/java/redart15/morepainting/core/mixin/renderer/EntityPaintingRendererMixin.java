@@ -27,18 +27,14 @@ public class EntityPaintingRendererMixin {
 		IconCoordinate texture,
 		Operation<Void> original
 	){
-		if(entityPainting instanceof PaintingIndex){
-			PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
-			Index index = paintingIndex.morepainting$getIndex();
-			IconCoordinate actualTexture = ArtTypes.getArt(index).getTexture();
-			original.call(
-				entityPaitingRenderer, tessellatorGeneral,
-				entityPainting, index.getX(), index.getY(),
-				actualTexture
-			);
+		if (!(entityPainting instanceof PaintingIndex) || ((PaintingIndex)entityPainting).morepainting$isDefaultRendering()) {
+			original.call(entityPaitingRenderer, tessellatorGeneral, entityPainting, x, y, texture);
 			return;
 		}
-		original.call(entityPaitingRenderer, tessellatorGeneral, entityPainting, x, y, texture);
+		PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
+		Index index = paintingIndex.morepainting$getIndex();
+		IconCoordinate actualTexture = ArtTypes.getArt(index).getTexture();
+		original.call(entityPaitingRenderer, tessellatorGeneral, entityPainting, index.getX(), index.getY(), actualTexture);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/client/render/tessellator/Tessellator;Lnet/minecraft/core/entity/EntityPainting;DDDFF)V",
@@ -49,12 +45,12 @@ public class EntityPaintingRendererMixin {
 		int x, int y,
 		Operation<Void> original
 	){
-		if(entityPainting instanceof PaintingIndex) {
-			PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
-			Index index = paintingIndex.morepainting$getIndex();
-			original.call(entityPaitingRenderer, entityPainting, index.getX(), index.getY());
+		if (!(entityPainting instanceof PaintingIndex) || ((PaintingIndex)entityPainting).morepainting$isDefaultRendering()) {
+			original.call(entityPaitingRenderer, entityPainting, x, y);
 			return;
 		}
-		original.call(entityPaitingRenderer, entityPainting, x, y);
+		PaintingIndex paintingIndex = (PaintingIndex) entityPainting;
+		Index index = paintingIndex.morepainting$getIndex();
+		original.call(entityPaitingRenderer, entityPainting, index.getX(), index.getY());
 	}
 }
