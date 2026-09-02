@@ -21,6 +21,9 @@ public class PacketAddPaintingMixin implements PaintingIndex{
 	@Unique
 	Index index;
 
+	@Unique
+	boolean defaultRendering = false;
+
 	@Inject(method = "<init>(Lnet/minecraft/core/entity/EntityPainting;)V", at = @At("TAIL"))
 	private void addIndex(EntityPainting entitypainting, CallbackInfo ci){
 		if(entitypainting instanceof PaintingIndex paintingIndex){
@@ -36,13 +39,15 @@ public class PacketAddPaintingMixin implements PaintingIndex{
 		int x = dis.readInt();
 		int y = dis.readInt();
 		this.index = new Index(i, new Size(x, y));
+		this.defaultRendering = dis.readBoolean();
 	}
 
 	@Inject(method = "write", at = @At("TAIL"))
 	private void writeAdditional(DataOutputStream dos, CallbackInfo ci) throws IOException{
-		dos.writeInt(index.index());
-		dos.writeInt(index.getX());
-		dos.writeInt(index.getY());
+		dos.writeInt(this.index.index());
+		dos.writeInt(this.index.getX());
+		dos.writeInt(this.index.getY());
+		dos.writeBoolean(this.defaultRendering);
 	}
 
 	@Override
@@ -53,5 +58,15 @@ public class PacketAddPaintingMixin implements PaintingIndex{
 	@Override
 	public void morepainting$setIndex(Index index) {
 		this.index = index;
+	}
+
+	@Override
+	public boolean morepainting$isDefaultRendering() {
+		return this.defaultRendering;
+	}
+
+	@Override
+	public void morepainting$setDefaultRendering(boolean defaultRendering) {
+		this.defaultRendering = defaultRendering;
 	}
 }

@@ -28,6 +28,9 @@ public class EntityPaintingMixin implements PaintingIndex {
 	private Index index;
 
 	@Unique
+	private boolean isDefaultRendering = false;
+
+	@Unique
 	EntityPainting asThis = (EntityPainting) (Object) this;
 
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;IIIILjava/lang/String;)V", at = @At("TAIL"))
@@ -44,6 +47,10 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@WrapMethod(method = "setDirection")
 	public void setDirection(int direction, Operation<Void> original) {
+		if(this.isDefaultRendering){
+			original.call(direction);
+			return;
+		}
 		this.asThis.direction = direction;
 		this.asThis.yRotO = this.asThis.yRot = (direction * 90);
 		float sizeX = this.index.getX();
@@ -93,6 +100,9 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@WrapMethod(method = "canStay")
 	public boolean canStay(Operation<Boolean> original) {
+		if(this.isDefaultRendering){
+			return original.call();
+		}
 		if (!this.asThis.world.getCubes(asThis, asThis.bb).isEmpty()) {
 			return false;
 		}
@@ -128,19 +138,25 @@ public class EntityPaintingMixin implements PaintingIndex {
 		return true;
 	}
 
-	@Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
+	@Inject(method = "readAdditionalSaveData", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/entity/EntityPainting;setDirection(I)V"))
 	private void readIndex(CompoundTag tag, CallbackInfo ci) {
-		int i = tag.getInteger("Index");
-		int x = tag.getInteger("sizeX");
-		int y = tag.getInteger("sizeY");
-		this.index = new Index(i, new Size(x, y));
+		if (tag.containsKey("Index") || !tag.containsKey("sizeX") || !tag.containsKey("sizeY")) {
+			this.isDefaultRendering = true;
+		} else {
+			int x = tag.getInteger("sizeX");
+			int y = tag.getInteger("sizeY");
+			int i = tag.getInteger("Index");
+			this.index = new Index(i, new Size(x, y));
+		}
 	}
 
-	@Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
+	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void addIndex(CompoundTag tag, CallbackInfo ci) {
-		tag.putInt("Index", this.index.index());
-		tag.putInt("sizeX", this.index.getX());
-		tag.putInt("sizeY", this.index.getY());
+		if (!this.isDefaultRendering) {
+			tag.putInt("Index", this.index.index());
+			tag.putInt("sizeX", this.index.getX());
+			tag.putInt("sizeY", this.index.getY());
+		}
 	}
 
 	@Override
@@ -156,15 +172,26 @@ public class EntityPaintingMixin implements PaintingIndex {
 		}
 		index.setX((int) Math.ceil(index.getX() / 16.0F) * 16);
 		index.setY((int) Math.ceil(index.getY() / 16.0F) * 16);
-		if (index.getX() >= Index.MIN_WIDTH
-			&& index.getX() <= Index.MAX_WIDTH
-			&& index.getY() >= Index.MIN_HEIGHT
-			&& index.getY() <= Index.MAX_HEIGHT
+		if (index.getX() < Size.MIN_WIDTH
+			|| index.getX() > Size.MAX_WIDTH
+			|| index.getY() < Size.MIN_HEIGHT
+			|| index.getY() > Size.MAX_HEIGHT
 		) {
 			this.index = Index.getDefaultIndex();
-			return;
+		} else {
+			this.index = index;
 		}
-		this.index = index;
+	}
+
+	@Override
+	public boolean morepainting$isDefaultRendering() {
+		return this.isDefaultRendering;
+	}
+
+
+	@Override
+	public void morepainting$setDefaultRendering(boolean defaultRendering) {
+		this.isDefaultRendering = defaultRendering;
 	}
 
 	@Unique

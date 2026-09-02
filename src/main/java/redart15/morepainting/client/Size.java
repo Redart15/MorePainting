@@ -4,11 +4,12 @@ import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class Size extends IntIntMutablePair implements Comparable<Size>{
-	private static final int SX = 16;
-	private static final int SY = 16;
+	public static final int MIN_WIDTH = 1;
+	public static final int MIN_HEIGHT = 1;
+	public static final int MAX_WIDTH = 100;
+	public static final int MAX_HEIGHT = 100;
+	public static final int PIXEL_PER_BLOCK = 16;
 
 	public Size(int left, int right) {
 		super(left, right);
@@ -16,7 +17,7 @@ public class Size extends IntIntMutablePair implements Comparable<Size>{
 
 	@Contract(" -> new")
 	public static @NotNull Size getSmallest() {
-		return new Size(SX, SY);
+		return new Size(PIXEL_PER_BLOCK * MIN_WIDTH, PIXEL_PER_BLOCK * MIN_HEIGHT);
 	}
 
 	@Override

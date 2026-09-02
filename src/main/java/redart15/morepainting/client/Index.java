@@ -6,12 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public record Index(int index, Size size){
-	public static final int MIN_WIDTH = 1;
-	public static final int MIN_HEIGHT = 1;
-	public static final int MAX_WIDTH = 100;
-	public static final int MAX_HEIGHT = 100;
-	public static final int PIXEL_PER_BLOCK = 16;
-
 
 	@Contract(" -> new")
 	public static @NotNull Index getDefaultIndex() {

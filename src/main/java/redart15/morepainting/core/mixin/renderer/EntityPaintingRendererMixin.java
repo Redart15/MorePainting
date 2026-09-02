@@ -24,17 +24,17 @@ public class EntityPaintingRendererMixin {
 		IconCoordinate texture,
 		Operation<Void> original
 	){
-		if(entityPainting instanceof PaintingIndex paintingIndex){
-			Index index = paintingIndex.morepainting$getIndex();
-			IconCoordinate actualTexture = ArtTypes.getArt(index).getTexture();
-			original.call(
-				entityPaitingRenderer, tessellatorGeneral,
-				entityPainting, index.getX(), index.getY(),
-				actualTexture
-			);
+		if (!(entityPainting instanceof PaintingIndex paintingIndex) || paintingIndex.morepainting$isDefaultRendering()) {
+			original.call(entityPaitingRenderer, tessellatorGeneral, entityPainting, x, y, texture);
 			return;
 		}
-		original.call(entityPaitingRenderer, tessellatorGeneral, entityPainting, x, y, texture);
+		Index index = paintingIndex.morepainting$getIndex();
+		IconCoordinate actualTexture = ArtTypes.getArt(index).getTexture();
+		original.call(
+			entityPaitingRenderer, tessellatorGeneral,
+			entityPainting, index.getX(), index.getY(),
+			actualTexture
+		);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/client/render/tessellator/TessellatorGeneral;Lnet/minecraft/core/entity/EntityPainting;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRendererPainting;renderBorder(Lnet/minecraft/core/entity/EntityPainting;II)V"))
@@ -44,11 +44,11 @@ public class EntityPaintingRendererMixin {
 		int x, int y,
 		Operation<Void> original
 	){
-		if(entityPainting instanceof PaintingIndex paintingIndex) {
-			Index index = paintingIndex.morepainting$getIndex();
-			original.call(entityPaitingRenderer, entityPainting, index.getX(), index.getY());
+		if (!(entityPainting instanceof PaintingIndex paintingIndex) || paintingIndex.morepainting$isDefaultRendering()) {
+			original.call(entityPaitingRenderer, entityPainting, x, y);
 			return;
 		}
-		original.call(entityPaitingRenderer, entityPainting, x, y);
+		Index index = paintingIndex.morepainting$getIndex();
+		original.call(entityPaitingRenderer, entityPainting, index.getX(), index.getY());
 	}
 }

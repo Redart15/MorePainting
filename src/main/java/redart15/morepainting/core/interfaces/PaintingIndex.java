@@ -6,4 +6,6 @@ public interface PaintingIndex {
 
 	Index morepainting$getIndex();
 	void morepainting$setIndex(Index index);
+	boolean morepainting$isDefaultRendering();
+	void morepainting$setDefaultRendering(boolean defaultRendering);
 }

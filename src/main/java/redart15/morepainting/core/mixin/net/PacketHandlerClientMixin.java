@@ -26,8 +26,8 @@ public abstract class PacketHandlerClientMixin {
 		if(entityPainting instanceof PaintingIndex paintingIndex
 			&& packetAddPainting instanceof PaintingIndex packetPaintingIndex
 		){
-			Index index = packetPaintingIndex.morepainting$getIndex();
-			paintingIndex.morepainting$setIndex(index);
+			paintingIndex.morepainting$setIndex(packetPaintingIndex.morepainting$getIndex());
+			paintingIndex.morepainting$setDefaultRendering(packetPaintingIndex.morepainting$isDefaultRendering());
 		}
 	}
 
@@ -48,8 +48,8 @@ public abstract class PacketHandlerClientMixin {
 			&& entity instanceof EntityPainting entityPainting
 			&& packetAddPainting instanceof PaintingIndex packetPaintingIndex
 		) {
-			Index index = packetPaintingIndex.morepainting$getIndex();
-			paintingIndex.morepainting$setIndex(index);
+			paintingIndex.morepainting$setIndex(packetPaintingIndex.morepainting$getIndex());
+			paintingIndex.morepainting$setDefaultRendering(packetPaintingIndex.morepainting$isDefaultRendering());
 			entityPainting.setDirection(packetAddPainting.direction);
 		}
 		original.call(world, id, entity);

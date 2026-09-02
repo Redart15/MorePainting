@@ -19,6 +19,7 @@ import java.util.*;
 
 import static redart15.morepainting.MorePainting.LOGGER;
 import static redart15.morepainting.client.Index.*;
+import static redart15.morepainting.client.Size.*;
 
 @Environment(EnvType.CLIENT)
 public class ArtTypes {
