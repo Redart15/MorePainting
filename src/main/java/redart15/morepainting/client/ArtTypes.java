@@ -8,7 +8,6 @@ import net.minecraft.client.render.texture.stitcher.IconCoordinate;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.client.render.texturepack.TexturePack;
 import net.minecraft.client.render.texturepack.TexturePackList;
-import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.enums.ArtType;
 import org.jetbrains.annotations.NotNull;
 import redart15.morepainting.client.data.DataArt;
@@ -20,6 +19,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import static redart15.morepainting.MorePainting.LOGGER;
+import static redart15.morepainting.client.Size.*;
 
 @Environment(EnvType.CLIENT)
 public class ArtTypes {
@@ -27,13 +27,9 @@ public class ArtTypes {
 	private static final TreeMap<Size, List<Art>> SIZE2ART_LIST = new TreeMap<>();
 	private static final Map<String, List<DataArt>> PICTURE_WITHOUT_SIZE = new HashMap<>();
 	private static int totalSize = 0;
-	private static final int MIN_WIDTH = 1;
-	private static final int MIN_HEIGHT = 1;
-	private static final int MAX_WIDTH = 100;
-	private static final int MAX_HEIGHT = 100;
-	private static final int PIXEL_PER_BLOCK = 16;
 
-	private ArtTypes(){}
+	private ArtTypes() {
+	}
 
 	@SuppressWarnings("java:S1854")
 	public static void reload() {
@@ -52,19 +48,18 @@ public class ArtTypes {
 		packs.addAll(packList.selectedPacks);
 		for (TexturePack pack : packs) {
 			String namespace = "minecraft";
-//			for (String namespace : Registries.NAMESPACES) {
-				try (InputStream stream = pack.getResourceAsStream("/assets/" + namespace + "/textures/art/painting.toml")) {
-					List<DataArt> sizeLessPictures = PICTURE_WITHOUT_SIZE.computeIfAbsent(pack.fileName, key -> new ArrayList<>());
-					if (stream == null) {
-						continue;
-					}
-					ArtTypes.loadFromConfigFile(stream, sizeLessPictures);
-				} catch (IOException exception) {
-					LOGGER.error("Exception while reading paintings in pack '{}'!", pack.fileName, exception);
-				} catch (IllegalArgumentException exception) {
-					LOGGER.error("Invalid painting in pack '{}': {}", pack.fileName, exception.getMessage());
+			try (InputStream stream = pack.getResourceAsStream("/assets/" + namespace + "/textures/art/painting.toml")) {
+				List<DataArt> sizeLessPictures = PICTURE_WITHOUT_SIZE.computeIfAbsent(pack.fileName, key -> new ArrayList<>());
+				if (stream == null) {
+					continue;
 				}
-//			}
+				ArtTypes.loadFromConfigFile(stream, sizeLessPictures);
+			} catch (IOException exception) {
+				LOGGER.error("Exception while reading paintings in pack '{}'!", pack.fileName, exception);
+			} catch (IllegalArgumentException exception) {
+				LOGGER.error("Invalid painting in pack '{}': {}", pack.fileName, exception.getMessage());
+			}
+//
 		}
 
 	}
@@ -72,7 +67,7 @@ public class ArtTypes {
 	@SuppressWarnings("java:S1854")
 	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) throws IOException {
 		DataArtTypeList extraList = new Toml().read(stream).to(DataArtTypeList.class);
-		if(extraList == null){
+		if (extraList == null) {
 			throw new IOException();
 		}
 		for (DataArt artType : extraList.paintings()) {
@@ -115,7 +110,7 @@ public class ArtTypes {
 	}
 
 	private static @NotNull Size getSize(DataArt artType, IconCoordinate texture) {
-		double scale =artType.scaled() == null || artType.scaled() < 0 ? 1.0F : artType.scaled();
+		double scale = artType.scaled() == null || artType.scaled() < 0 ? 1.0F : artType.scaled();
 		int width = (int) Math.ceil(texture.width / (16.0F * scale));
 		int height = (int) Math.ceil(texture.height / (16.0F * scale));
 		if (width <= 0 || height <= 0 || width > MAX_WIDTH || height > MAX_HEIGHT) {
@@ -184,7 +179,7 @@ public class ArtTypes {
 		return art;
 	}
 
-	public static int getTotalArtAmount(){
+	public static int getTotalArtAmount() {
 		return totalSize;
 	}
 
@@ -193,7 +188,7 @@ public class ArtTypes {
 		String artist;
 		String texture;
 
-		public Art(String title, String artist, String texture){
+		public Art(String title, String artist, String texture) {
 			this.title = title;
 			this.artist = artist;
 			this.texture = texture;

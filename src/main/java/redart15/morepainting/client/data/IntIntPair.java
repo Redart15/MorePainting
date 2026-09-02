@@ -1,8 +1,8 @@
 package redart15.morepainting.client.data;
 
 public class IntIntPair {
-	private final int first;
-	private final int second;
+	private int first;
+	private int second;
 
 	public IntIntPair(int first, int second) {
 		this.first = first;
@@ -19,5 +19,16 @@ public class IntIntPair {
 
 	public int secondInt(){
 		return this.second;
+	}
+
+
+	public IntIntPair first(int first){
+		this.first = first;
+		return this;
+	}
+
+	public IntIntPair second(int second){
+		this.second = second;
+		return this;
 	}
 }

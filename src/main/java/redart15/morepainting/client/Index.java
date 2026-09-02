@@ -27,6 +27,16 @@ public class Index{
 		return this.size.secondInt();
 	}
 
+	public @NotNull Index setX(int first){
+		this.size().first(first);
+		return this;
+	}
+
+	public @NotNull Index setY(int second){
+		this.size().second(second);
+		return this;
+	}
+
 	public Size size(){
 		return this.size;
 	}
