@@ -33,20 +33,20 @@ public class EntityPaintingMixin implements PaintingIndex {
 	EntityPainting asThis = (EntityPainting) (Object) this;
 
 	@Inject(method = "<init>(Lnet/minecraft/core/world/World;IIIILjava/lang/String;)V", at = @At("TAIL"))
-	private void initIndex(World world, int x, int y, int z, int side, String motive, CallbackInfo ci){
+	private void initIndex(World world, int x, int y, int z, int side, String motive, CallbackInfo ci) {
 		this.index = Index.getDefaultIndex();
 		this.asThis.viewScale = 1.0F; // same as all entities render distance
 	}
 
-	@Inject(method = "<init>(Lnet/minecraft/core/world/World;)V", at= @At("TAIL"))
-	private void initIndex(World world, CallbackInfo ci){
+	@Inject(method = "<init>(Lnet/minecraft/core/world/World;)V", at = @At("TAIL"))
+	private void initIndex(World world, CallbackInfo ci) {
 		this.index = Index.getDefaultIndex();
 		this.asThis.viewScale = 1.0F; // same as all entities render distance
 	}
 
 	@WrapMethod(method = "setDirection")
 	public void setDirection(int direction, Operation<Void> original) {
-		if(this.isDefaultRendering){
+		if (this.isDefaultRendering) {
 			original.call(direction);
 			return;
 		}
@@ -64,17 +64,33 @@ public class EntityPaintingMixin implements PaintingIndex {
 		sizeX /= 32.0F;
 		sizeY /= 32.0F;
 		sizeZ /= 32.0F;
-		double centerX = (double)this.asThis.blockX + (double)0.5F;
-		double centerY = (double)this.asThis.blockY + (double)0.5F;
-		double centerZ = (double)this.asThis.blockZ + (double)0.5F;
-		if (direction == 0) {centerZ -= 0.53F;}
-		if (direction == 1) {centerX -= 0.53F;}
-		if (direction == 2) {centerZ += 0.53F;}
-		if (direction == 3) {centerX += 0.53F;}
-		if (direction == 0) {centerX -= this.offsetFromCenter(this.index.getX());}
-		if (direction == 1) {centerZ += this.offsetFromCenter(this.index.getX());}
-		if (direction == 2) {centerX += this.offsetFromCenter(this.index.getX());}
-		if (direction == 3) {centerZ -= this.offsetFromCenter(this.index.getX());}
+		double centerX = (double) this.asThis.blockX + (double) 0.5F;
+		double centerY = (double) this.asThis.blockY + (double) 0.5F;
+		double centerZ = (double) this.asThis.blockZ + (double) 0.5F;
+		if (direction == 0) {
+			centerZ -= 0.53F;
+		}
+		if (direction == 1) {
+			centerX -= 0.53F;
+		}
+		if (direction == 2) {
+			centerZ += 0.53F;
+		}
+		if (direction == 3) {
+			centerX += 0.53F;
+		}
+		if (direction == 0) {
+			centerX -= this.offsetFromCenter(this.index.getX());
+		}
+		if (direction == 1) {
+			centerZ += this.offsetFromCenter(this.index.getX());
+		}
+		if (direction == 2) {
+			centerX += this.offsetFromCenter(this.index.getX());
+		}
+		if (direction == 3) {
+			centerZ -= this.offsetFromCenter(this.index.getX());
+		}
 		centerY += this.offsetFromCenter(this.index.getY());
 		this.asThis.setPos(centerX, centerY, centerZ);
 		float expand = -0.0F;
@@ -104,7 +120,7 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@WrapMethod(method = "canStay")
 	public boolean canStay(Operation<Boolean> original) {
-		if(this.isDefaultRendering){
+		if (this.isDefaultRendering) {
 			return original.call();
 		}
 		if (!this.asThis.world.getCubes(asThis, asThis.bb).isEmpty()) {
@@ -115,12 +131,20 @@ public class EntityPaintingMixin implements PaintingIndex {
 		int xPosition = this.asThis.blockX;
 		int yPosition = MathHelper.floor(this.asThis.y - (this.index.getY() / 32.0F));
 		int zPosition = this.asThis.blockZ;
-		if (this.asThis.direction == 0) {xPosition = MathHelper.floor(asThis.x - (this.index.getX() / 32.0F));}
-		if (this.asThis.direction == 1) {zPosition = MathHelper.floor(this.asThis.z - (this.index.getX() / 32.0F));}
-		if (this.asThis.direction == 2) {xPosition = MathHelper.floor(this.asThis.x - (this.index.getX() / 32.0F));}
-		if (this.asThis.direction == 3) {zPosition = MathHelper.floor(this.asThis.z - (this.index.getX() / 32.0F));}
-		for(int dx = 0; dx < xSize; ++dx) {
-			for(int dy = 0; dy < ySize; ++dy) {
+		if (this.asThis.direction == 0) {
+			xPosition = MathHelper.floor(asThis.x - (this.index.getX() / 32.0F));
+		}
+		if (this.asThis.direction == 1) {
+			zPosition = MathHelper.floor(this.asThis.z - (this.index.getX() / 32.0F));
+		}
+		if (this.asThis.direction == 2) {
+			xPosition = MathHelper.floor(this.asThis.x - (this.index.getX() / 32.0F));
+		}
+		if (this.asThis.direction == 3) {
+			zPosition = MathHelper.floor(this.asThis.z - (this.index.getX() / 32.0F));
+		}
+		for (int dx = 0; dx < xSize; ++dx) {
+			for (int dy = 0; dy < ySize; ++dy) {
 				Material material;
 				if (this.asThis.direction != 0 && this.asThis.direction != 2) {
 					material = this.asThis.world.getBlockMaterial(this.asThis.blockX, yPosition + dy, zPosition + dx);
@@ -132,7 +156,7 @@ public class EntityPaintingMixin implements PaintingIndex {
 				}
 			}
 		}
-		for(Entity entity : this.asThis.world.getEntitiesWithinAABBExcludingEntity(this.asThis, this.asThis.bb)) {
+		for (Entity entity : this.asThis.world.getEntitiesWithinAABBExcludingEntity(this.asThis, this.asThis.bb)) {
 			if (entity instanceof EntityPainting) {
 				return false;
 			}
@@ -141,24 +165,20 @@ public class EntityPaintingMixin implements PaintingIndex {
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/entity/EntityPainting;setDirection(I)V"))
-	private void readIndex(CompoundTag tag, CallbackInfo ci){
-		if (tag.containsKey("Index") || !tag.containsKey("sizeX") || !tag.containsKey("sizeY")) {
-			this.isDefaultRendering = true;
-		} else {
-			int x = tag.getInteger("sizeX");
-			int y = tag.getInteger("sizeY");
-			int i = tag.getInteger("Index");
-			this.index = new Index(i, new Size(x, y));
-		}
+	private void readIndex(CompoundTag tag, CallbackInfo ci) {
+		int x = tag.getInteger("sizeX");
+		int y = tag.getInteger("sizeY");
+		int i = tag.getInteger("Index");
+		this.index = new Index(i, new Size(x, y));
+		this.isDefaultRendering = !tag.containsKey("DefaultRender") || tag.getBoolean("DefaultRender");
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-	private void addIndex(CompoundTag tag, CallbackInfo ci){
-		if (!this.isDefaultRendering) {
-			tag.putInt("Index", this.index.index());
-			tag.putInt("sizeX", this.index.getX());
-			tag.putInt("sizeY", this.index.getY());
-		}
+	private void addIndex(CompoundTag tag, CallbackInfo ci) {
+		tag.putInt("Index", this.index.index());
+		tag.putInt("sizeX", this.index.getX());
+		tag.putInt("sizeY", this.index.getY());
+		tag.putBoolean("DefaultRender", this.isDefaultRendering);
 	}
 
 	@Override
