@@ -38,7 +38,7 @@ Here is an example:
 title = "Alpha"
 artist = "Yapetto"
 texture = "minecraft:art/alpha"
-[painting.dimensions]
+[paintings.dimensions]
 width = 1
 height =  1
 
@@ -47,7 +47,7 @@ height =  1
 artist = "Yapetto"
 texture = "minecraft:art/an_intruder"
 scale = 10
-[painting.dimensions]
+[paintings.dimensions]
 width = 100
 height =  100
 
