@@ -58,14 +58,15 @@ public class ArtTypes {
 				LOGGER.error("Exception while reading paintings in pack '{}'!", pack.fileName, exception);
 			} catch (IllegalArgumentException exception) {
 				LOGGER.error("Invalid painting in pack '{}': {}", pack.fileName, exception.getMessage());
+			}catch (IllegalStateException exception) {
+				LOGGER.error("Toml could not be read for pack '{}': {}", pack.fileName, exception.getMessage());
 			}
-//
 		}
 
 	}
 
 	@SuppressWarnings("java:S1854")
-	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) throws IOException {
+	private static void loadFromConfigFile(InputStream stream, List<DataArt> sizeLessPictures) throws IOException, IllegalStateException  {
 		DataArtTypeList extraList = new Toml().read(stream).to(DataArtTypeList.class);
 		if (extraList == null) {
 			throw new IOException();
