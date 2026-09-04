@@ -140,23 +140,19 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@Inject(method = "readAdditionalSaveData", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/entity/EntityPainting;setDirection(I)V"))
 	private void readIndex(CompoundTag tag, CallbackInfo ci) {
-		if (tag.containsKey("Index") || !tag.containsKey("sizeX") || !tag.containsKey("sizeY")) {
-			this.isDefaultRendering = true;
-		} else {
-			int x = tag.getInteger("sizeX");
-			int y = tag.getInteger("sizeY");
-			int i = tag.getInteger("Index");
-			this.index = new Index(i, new Size(x, y));
-		}
+		int x = tag.getInteger("sizeX");
+		int y = tag.getInteger("sizeY");
+		int i = tag.getInteger("Index");
+		this.index = new Index(i, new Size(x, y));
+		this.isDefaultRendering = !tag.containsKey("DefaultRender") || tag.getBoolean("DefaultRender");
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void addIndex(CompoundTag tag, CallbackInfo ci) {
-		if (!this.isDefaultRendering) {
-			tag.putInt("Index", this.index.index());
-			tag.putInt("sizeX", this.index.getX());
-			tag.putInt("sizeY", this.index.getY());
-		}
+		tag.putInt("Index", this.index.index());
+		tag.putInt("sizeX", this.index.getX());
+		tag.putInt("sizeY", this.index.getY());
+		tag.putBoolean("DefaultRender", this.isDefaultRendering);
 	}
 
 	@Override
@@ -166,20 +162,11 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@Override
 	public void morepainting$setIndex(Index index) {
-		if (index == null || index.index() < 0) {
-			this.index = Index.getDefaultIndex();
-			return;
-		}
-		index.setX((int) Math.ceil(index.getX() / 16.0F) * 16);
-		index.setY((int) Math.ceil(index.getY() / 16.0F) * 16);
-		if (index.getX() < Size.MIN_WIDTH
-			|| index.getX() > Size.MAX_WIDTH
-			|| index.getY() < Size.MIN_HEIGHT
-			|| index.getY() > Size.MAX_HEIGHT
-		) {
-			this.index = Index.getDefaultIndex();
-		} else {
+		if(index.isValid()){
+			index.setInBlockBounds();
 			this.index = index;
+		}else{
+			this.index = Index.getDefaultIndex();
 		}
 	}
 
