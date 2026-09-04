@@ -188,20 +188,11 @@ public class EntityPaintingMixin implements PaintingIndex {
 
 	@Override
 	public void morepainting$setIndex(Index index) {
-		if (index == null || index.index() < 0) {
-			this.index = Index.getDefaultIndex();
-			return;
-		}
-		index.setX((int) Math.ceil(index.getX() / 16.0F) * 16);
-		index.setY((int) Math.ceil(index.getY() / 16.0F) * 16);
-		if (index.getX() < Size.MIN_WIDTH
-			|| index.getX() > Size.MAX_WIDTH
-			|| index.getY() < Size.MIN_HEIGHT
-			|| index.getY() > Size.MAX_HEIGHT
-		) {
-			this.index = Index.getDefaultIndex();
-		} else {
+		if(index.isValid()){
+			index.setInBlockBounds();
 			this.index = index;
+		}else {
+			this.index = Index.getDefaultIndex();
 		}
 	}
 

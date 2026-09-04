@@ -81,10 +81,10 @@ public class ArtTypes {
 			}
 			int width = dim.width();
 			int height = dim.height();
-			if (width < MIN_WIDTH || height < MIN_HEIGHT || width > MAX_WIDTH || height > MAX_HEIGHT) {
+			Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
+			if (size.isValid()) {
 				throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 			}
-			Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
 			Art art = new Art(artType.title(), artType.artist(), artType.texture());
 			ArtTypes.SIZE2ART_LIST.computeIfAbsent(size, key -> new ArrayList<>()).add(art);
 			ArtTypes.totalSize += 1;
@@ -113,10 +113,11 @@ public class ArtTypes {
 		double scale = artType.scaled() == null || artType.scaled() < 0 ? 1.0F : artType.scaled();
 		int width = (int) Math.ceil(texture.width / (16.0F * scale));
 		int height = (int) Math.ceil(texture.height / (16.0F * scale));
-		if (width <= 0 || height <= 0 || width > MAX_WIDTH || height > MAX_HEIGHT) {
+		Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
+		if (size.isValid()) {
 			throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 		}
-		return new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
+		return size;
 	}
 
 

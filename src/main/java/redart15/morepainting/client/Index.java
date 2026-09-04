@@ -27,14 +27,14 @@ public class Index{
 		return this.size.secondInt();
 	}
 
-	public @NotNull Index setX(int first){
-		this.size().first(first);
-		return this;
+	public boolean isValid(){
+		return this.index() >= 0 && this.size() != null && this.size().isValid();
+
 	}
 
-	public @NotNull Index setY(int second){
-		this.size().second(second);
-		return this;
+	public void setInBlockBounds(){
+		this.size.setInBlockBounds();
+
 	}
 
 	public Size size(){
