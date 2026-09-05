@@ -83,7 +83,7 @@ public class ArtTypes {
 			int width = dim.width();
 			int height = dim.height();
 			Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
-			if (size.isValid()) {
+			if (!size.isValid()) {
 				throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 			}
 			Art art = new Art(artType.title(), artType.artist(), artType.texture());
@@ -115,7 +115,7 @@ public class ArtTypes {
 		int width = (int) Math.ceil(texture.width / (16.0F * scale));
 		int height = (int) Math.ceil(texture.height / (16.0F * scale));
 		Size size = new Size(width * PIXEL_PER_BLOCK, height * PIXEL_PER_BLOCK);
-		if (size.isValid()) {
+		if (!size.isValid()) {
 			throw new IllegalArgumentException(String.format("Invalid dimensions for painting '%s':%dx%d", artType.title(), width, height));
 		}
 		return size;
