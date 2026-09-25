@@ -65,7 +65,7 @@ Keep this in mind when making paintings via modding.
 
 ## ❓ Q&A:
 
-### Multiplayer
+### 👥 Multiplayer
 Q: Is this a client side mod?  
 A: No, the mod is required both on server and client.  
 
@@ -77,7 +77,7 @@ Q: Client A has an asset pack with a custom painting of a burger. Client B does 
    Can Client B see the painting from Client A's asset pack, even though Client B and the server both don't have the asset pack?
 A: Client B sees either the default painting or some other painting.
 
-### Making texture pack
+### 📦 Making texture pack
 Q: Help my painting arent loading  
 A: Is the asset pack loaded?  
 
